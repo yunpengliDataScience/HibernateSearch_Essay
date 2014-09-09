@@ -6,55 +6,23 @@
 	<version>0.0.1-SNAPSHOT</version>
 
 	<properties>
-		<hibernate.version>4.2.8.Final</hibernate.version>
+		<hibernate.search.version>4.4.2.Final</hibernate.search.version>
 		<slf4j.version>1.4.2</slf4j.version>
-		<javassist.version>3.4.GA</javassist.version>
 	</properties>
 
 	<dependencies>
-		<!-- Hibernate -->
-		<!-- <dependency> <groupId>org.hibernate</groupId> <artifactId>hibernate-entitymanager</artifactId> 
-			<version>${hibernate.version}</version> </dependency> -->
-
+		<!-- Hibernate Search-->
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-search</artifactId>
-			<version>3.1.1.GA</version>
+			<version>${hibernate.search.version}</version>
 		</dependency>
-
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-core</artifactId>
-			<version>3.3.2.GA</version>
-		</dependency>
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-c3p0</artifactId>
-			<version>3.3.2.GA</version>
-		</dependency>
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-annotations</artifactId>
-			<version>3.4.0.GA</version>
-		</dependency>
-
-		<dependency>
-			<groupId>javassist</groupId>
-			<artifactId>javassist</artifactId>
-			<version>${javassist.version}</version>
-		</dependency>
-
+		
 		<!-- ORACLE database driver jar is in the local repo -->
 		<dependency>
 			<groupId>com.oracle</groupId>
 			<artifactId>ojdbc6</artifactId>
 			<version>11.2.0</version>
-		</dependency>
-
-		<dependency>
-			<groupId>hsqldb</groupId>
-			<artifactId>hsqldb</artifactId>
-			<version>1.8.0.7</version>
 		</dependency>
 
 		<!-- LOGGING DEPENDENCIES - LOG4J -->
@@ -86,7 +54,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>com.library.essay.MainApplication</mainClass>
+							<mainClass>com.library.essay.applications.MainApplication</mainClass>
 						</manifest>
 					</archive>
 					<descriptorRefs>

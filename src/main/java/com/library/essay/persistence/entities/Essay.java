@@ -30,7 +30,7 @@ public class Essay {
 	private Long id;
 
 	@Column(name = "TITLE")
-	@Field(index=Index.TOKENIZED, store=Store.YES)
+	@Field(index=Index.YES, store=Store.YES)
 	private String title;
 
 	@Column(name = "AUTHOR")

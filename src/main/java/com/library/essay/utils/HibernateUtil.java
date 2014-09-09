@@ -1,10 +1,9 @@
 package com.library.essay.utils;
 
 import org.hibernate.SessionFactory;
-import org.hibernate.cfg.AnnotationConfiguration;
 import org.hibernate.cfg.Configuration;
-
-import com.library.essay.persistence.entities.Essay;
+import org.hibernate.service.ServiceRegistry;
+import org.hibernate.service.ServiceRegistryBuilder;
 
 public class HibernateUtil {
 
@@ -12,18 +11,21 @@ public class HibernateUtil {
 
 	private static SessionFactory buildSessionFactory() {
 		try {
-			//For XML mapping
-			//return new Configuration().configure().buildSessionFactory();
+			// For XML mapping
+			Configuration configuration = new Configuration();
+			configuration.configure();
 			
-			//For Annotation
-			AnnotationConfiguration config=new AnnotationConfiguration();
-			config.addAnnotatedClass(Essay.class);
-			//return new AnnotationConfiguration().configure().buildSessionFactory();
-			
-			return config.configure().buildSessionFactory();
-			
+			//New way to build SessionFactory
+			ServiceRegistry serviceRegistry = new ServiceRegistryBuilder()
+					.applySettings(configuration.getProperties())
+					.buildServiceRegistry();
+			SessionFactory sessionFactory = configuration
+					.buildSessionFactory(serviceRegistry);
+
+			return sessionFactory;
+
 		} catch (Throwable ex) {
-			
+
 			throw new ExceptionInInitializerError(ex);
 		}
 	}
