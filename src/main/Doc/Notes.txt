@@ -1,0 +1,9 @@
+Lucene 2.40 StandardTokenizer:
+
+This should be a good tokenizer for most European-language documents:
+
+1. Splits words at punctuation characters, removing punctuation. However, a dot that's not followed by whitespace is considered part of a token.
+2. Splits words at hyphens, unless there's a number in the token, in which case the whole token is interpreted as a product number and is not split.
+3. Recognizes email addresses and internet hostnames as one token.
+
+http://www.lhelper.org/dev/lucene-2.4.0/docs/api/org/apache/lucene/analysis/standard/StandardTokenizer.html
