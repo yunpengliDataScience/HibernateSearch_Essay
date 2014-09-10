@@ -4,7 +4,16 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.queryParser.MultiFieldQueryParser;
+import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.util.Version;
 import org.hibernate.Session;
+import org.hibernate.Transaction;
+import org.hibernate.search.FullTextQuery;
+import org.hibernate.search.FullTextSession;
+import org.hibernate.search.Search;
 
 import com.library.essay.persistence.entities.Essay;
 import com.library.essay.utils.HibernateUtil;
@@ -23,11 +32,59 @@ public class MainApplication {
 
 			idList.add(id);
 		}
-		
+
 		application.printEssays(idList);
 
+		application.search();
+
 		// Clean up
-		// application.deleteEssays(idList);
+		application.deleteEssays(idList);
+	}
+
+	public void search() {
+
+		Session session = HibernateUtil.getSessionFactory().openSession();
+		FullTextSession fullTextSession = Search.getFullTextSession(session);
+
+		String field0 = "title";
+		String field1 = "content";
+
+		String queryString0 = "0008";
+		String queryString1 = "CDF8";
+
+		String[] fields = new String[] { field0, field1 };
+		String[] queries = new String[] { queryString0, queryString1 };
+
+		Transaction tx = fullTextSession.beginTransaction();
+
+		try {
+			Query query = MultiFieldQueryParser.parse(Version.LUCENE_36,
+					queries, fields, new StandardAnalyzer(Version.LUCENE_36));
+
+			System.out.println("=====================================");
+			System.out.println("Lucene query: " + query.toString());
+			System.out.println("=====================================");
+
+			FullTextQuery hibQuery = fullTextSession.createFullTextQuery(query,
+					Essay.class);
+
+			List<Essay> results = hibQuery.list();
+
+			System.out.println("=====================================");
+			System.out.println("Found matched items:");
+			System.out.println("=====================================");
+
+			for (Essay essay : results) {
+				System.out.println(essay);
+			}
+
+		} catch (ParseException e) {
+
+			e.printStackTrace();
+		}
+
+		tx.commit();
+		session.close();
 	}
 
 	public Essay getEssay(Serializable id) {
@@ -39,8 +96,12 @@ public class MainApplication {
 	}
 
 	public void printEssays(List<Serializable> idList) {
-		for (Serializable id : idList) {
 
+		System.out.println("=====================================");
+		System.out.println("Inserted Essays:");
+		System.out.println("=====================================");
+
+		for (Serializable id : idList) {
 			Essay essay = getEssay(id);
 			System.out.println(essay);
 		}
