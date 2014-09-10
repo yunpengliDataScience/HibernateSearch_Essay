@@ -27,7 +27,7 @@ public class MainApplication {
 		List<Serializable> idList = new ArrayList<Serializable>();
 
 		for (int i = 0; i < 10; i++) {
-			Serializable id = application.saveNewEssay("123-ABC-000" + i,
+			Serializable id = application.saveNewEssay("123-456-000" + i,
 					"Cliff Lee", "HHH CDF" + i);
 
 			idList.add(id);
@@ -49,7 +49,7 @@ public class MainApplication {
 		String field0 = "title";
 		String field1 = "content";
 
-		String queryString0 = "0008";
+		String queryString0 = "456";
 		String queryString1 = "CDF8";
 
 		String[] fields = new String[] { field0, field1 };
