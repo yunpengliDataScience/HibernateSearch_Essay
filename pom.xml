@@ -18,11 +18,18 @@
 			<version>${hibernate.search.version}</version>
 		</dependency>
 		
-		<!-- ORACLE database driver jar is in the local repo -->
+		<!-- ORACLE database driver jar is in the local repo 
 		<dependency>
 			<groupId>com.oracle</groupId>
 			<artifactId>ojdbc6</artifactId>
 			<version>11.2.0</version>
+		</dependency>
+		-->
+		
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<version>1.4.190</version>
 		</dependency>
 
 		<!-- LOGGING DEPENDENCIES - LOG4J -->
