@@ -4,7 +4,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.WhitespaceAnalyzer;
 import org.apache.lucene.queryParser.MultiFieldQueryParser;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.search.Query;
@@ -41,9 +42,9 @@ public class MainApplication {
 
     application.search();
 
-    application.buildIndex();
+    //application.buildIndex();
 
-    application.buildIndexBatch();
+    //application.buildIndexBatch();
 
     // Clean up
     application.deleteEssays(idList);
@@ -114,18 +115,44 @@ public class MainApplication {
     String field0 = "title";
     String field1 = "content";
 
-    String queryString0 = "456";
-    String queryString1 = "CDF8";
+    //String queryString0 = "456";
+    String queryString0 = "123*30";
+    
+    //String queryString1 = "CDF8";
+    //String queryString1 = "HHH CDF8";
+    //String queryString1 = "\"HHH CDF8\"";
+    //String queryString1 = "HHH*";
+    //String queryString1 = "CDF8*";
+    String queryString1 = "\"HHH CDF8\"";
 
-    String[] fields = new String[] {field0, field1};
-    String[] queries = new String[] {queryString0, queryString1};
+    //String[] fields = new String[] {/*field0,*/ field1};
+    //String[] queries = new String[] {/*queryString0,*/ queryString1};
+    
+    String[] fields = new String[] {field0};
+    String[] queries = new String[] {queryString0};
 
     Transaction tx = fullTextSession.beginTransaction();
 
     try {
-      Query query = MultiFieldQueryParser.parse(Version.LUCENE_36, queries, fields,
-          new StandardAnalyzer(Version.LUCENE_36));
+      
+      Analyzer analyzer=new WhitespaceAnalyzer(Version.LUCENE_36);
+      
+      MultiFieldQueryParser parser = new MultiFieldQueryParser(Version.LUCENE_36, fields, analyzer);
+      
+      parser.setAllowLeadingWildcard(true);  //TODO
+      Query query = parser.parse(Version.LUCENE_36, queries, fields, analyzer);
+      
+//      Query query = MultiFieldQueryParser.parse(Version.LUCENE_36, queries, fields,
+//          new StandardAnalyzer(Version.LUCENE_36));
 
+//      Query query = MultiFieldQueryParser.parse(Version.LUCENE_36, queries, fields,
+//          new WhitespaceAnalyzer(Version.LUCENE_36));
+      
+//      Query query = MultiFieldQueryParser.parse(Version.LUCENE_36, queries, fields,
+//          new KeywordAnalyzer());
+      
+
+      
       System.out.println("=====================================");
       System.out.println("Lucene query: " + query.toString());
       System.out.println("=====================================");

@@ -9,7 +9,6 @@ import javax.persistence.Lob;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
-import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.DocumentId;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Index;
@@ -19,7 +18,7 @@ import org.hibernate.search.annotations.Store;
 @Entity
 @Table(name = "Essay")
 @Indexed
-@Analyzer(impl = org.apache.lucene.analysis.standard.StandardAnalyzer.class)
+//@Analyzer(impl = org.apache.lucene.analysis.standard.StandardAnalyzer.class)
 public class Essay {
 
 	@Id
