@@ -9,74 +9,98 @@ import javax.persistence.Lob;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import org.apache.solr.analysis.KeywordTokenizerFactory;
+import org.apache.solr.analysis.LowerCaseFilterFactory;
+import org.hibernate.search.annotations.Analyzer;
+import org.hibernate.search.annotations.AnalyzerDef;
 import org.hibernate.search.annotations.DocumentId;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Index;
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.Store;
+import org.hibernate.search.annotations.TokenFilterDef;
+import org.hibernate.search.annotations.TokenizerDef;
 
 @Entity
 @Table(name = "Essay")
 @Indexed
-//@Analyzer(impl = org.apache.lucene.analysis.standard.StandardAnalyzer.class)
+// @Analyzer(impl = org.apache.lucene.analysis.standard.StandardAnalyzer.class)
+
+@AnalyzerDef(name = "lowCaseKeywordAnalyzer",
+    tokenizer = @TokenizerDef(factory = KeywordTokenizerFactory.class),
+    filters = {@TokenFilterDef(factory = LowerCaseFilterFactory.class)})
+
 public class Essay {
 
-	@Id
-	@Column(name = "ESSAY_ID")
-	@DocumentId
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ")
-	@SequenceGenerator(name = "SEQ", sequenceName = "ESSAY_SEQ", allocationSize = 1)
-	private Long id;
+  @Id
+  @Column(name = "ESSAY_ID")
+  @DocumentId
+  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ")
+  @SequenceGenerator(name = "SEQ", sequenceName = "ESSAY_SEQ", allocationSize = 1)
+  private Long id;
 
-	@Column(name = "TITLE")
-	@Field(index=Index.YES, store=Store.YES)
-	private String title;
+  @Column(name = "TAG")
+  // @Field(index=Index.YES, store=Store.YES, analyze=Analyze.NO)
+  @Analyzer(definition = "lowCaseKeywordAnalyzer")
+  @Field(index = Index.YES, store = Store.YES)
+  private String tag;
 
-	@Column(name = "AUTHOR")
-	@Field
-	private String author;
+  @Column(name = "TITLE")
+  @Field(index = Index.YES, store = Store.YES)
+  private String title;
 
-	@Lob
-	@Column(name = "CONTENT")
-	@Field
-	private String content;
+  @Column(name = "AUTHOR")
+  @Field
+  private String author;
 
-	public Long getId() {
-		return id;
-	}
+  @Lob
+  @Column(name = "CONTENT")
+  @Field
+  private String content;
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+  public Long getId() {
+    return id;
+  }
 
-	public String getTitle() {
-		return title;
-	}
+  public void setId(Long id) {
+    this.id = id;
+  }
 
-	public void setTitle(String title) {
-		this.title = title;
-	}
+  public String getTitle() {
+    return title;
+  }
 
-	public String getAuthor() {
-		return author;
-	}
+  public String getTag() {
+    return tag;
+  }
 
-	public void setAuthor(String author) {
-		this.author = author;
-	}
+  public void setTag(String tag) {
+    this.tag = tag;
+  }
 
-	public String getContent() {
-		return content;
-	}
+  public void setTitle(String title) {
+    this.title = title;
+  }
 
-	public void setContent(String content) {
-		this.content = content;
-	}
+  public String getAuthor() {
+    return author;
+  }
 
-	@Override
-	public String toString() {
-		return "Title: " + title + ", Author: " + author + ", Content: "
-				+ content;
+  public void setAuthor(String author) {
+    this.author = author;
+  }
 
-	}
+  public String getContent() {
+    return content;
+  }
+
+  public void setContent(String content) {
+    this.content = content;
+  }
+
+  @Override
+  public String toString() {
+    return "Title: " + title + ", Tag: " + tag + ", Author: " + author + ", Content: " + content;
+
+  }
 }

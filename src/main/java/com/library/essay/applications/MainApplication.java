@@ -5,9 +5,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.WhitespaceAnalyzer;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.queryParser.MultiFieldQueryParser;
 import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.util.Version;
 import org.hibernate.CacheMode;
@@ -32,8 +33,17 @@ public class MainApplication {
 
     List<Serializable> idList = new ArrayList<Serializable>();
 
+    String prefix = "123";
+    String[] letters = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O",
+        "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"};
+
     for (int i = 0; i < 100; i++) {
-      Serializable id = application.saveNewEssay("123-456-000" + i, "Cliff Lee", "HHH CDF" + i);
+
+      String letter = letters[i % 26];
+      String tag = prefix + "-" + letter + letter + letter + letter + "-000" + i;
+
+      String title = "Test Essay " + i;
+      Serializable id = application.saveNewEssay(tag, title, "Cliff Lee", "HHH CDF" + i);
 
       idList.add(id);
     }
@@ -42,13 +52,13 @@ public class MainApplication {
 
     application.search();
 
-    //application.buildIndex();
+    // application.buildIndex();
 
-    //application.buildIndexBatch();
+    // application.buildIndexBatch();
 
     // Clean up
     application.deleteEssays(idList);
-    
+
     System.exit(0);
   }
 
@@ -63,7 +73,7 @@ public class MainApplication {
     fullTextSession.setFlushMode(FlushMode.MANUAL);
     fullTextSession.setCacheMode(CacheMode.IGNORE);
     Transaction transaction = fullTextSession.beginTransaction();
-    
+
     // Scrollable results will avoid loading too many objects in memory
     ScrollableResults results = fullTextSession.createCriteria(Essay.class).setFetchSize(100)
         .scroll(ScrollMode.FORWARD_ONLY);
@@ -112,47 +122,49 @@ public class MainApplication {
     Session session = HibernateUtil.getSessionFactory().openSession();
     FullTextSession fullTextSession = Search.getFullTextSession(session);
 
-    String field0 = "title";
+    String field0 = "tag";
     String field1 = "content";
 
-    //String queryString0 = "456";
-    String queryString0 = "123*30";
-    
-    //String queryString1 = "CDF8";
-    //String queryString1 = "HHH CDF8";
-    //String queryString1 = "\"HHH CDF8\"";
-    //String queryString1 = "HHH*";
-    //String queryString1 = "CDF8*";
-    String queryString1 = "\"HHH CDF8\"";
+    String queryString0 = "123-CCC*";
 
-    //String[] fields = new String[] {/*field0,*/ field1};
-    //String[] queries = new String[] {/*queryString0,*/ queryString1};
-    
-    String[] fields = new String[] {field0};
-    String[] queries = new String[] {queryString0};
+    String queryString1 = "\"HHH CDF2\"";
+
+    // String queryString1 = "HHH CDF2";
+
+    // String[] fields = new String[] {/*field0,*/ field1};
+    // String[] queries = new String[] {/*queryString0,*/ queryString1};
+
+    String[] fields = new String[] {field0, field1};
+    String[] queries = new String[] {queryString0, queryString1};
+
+    // String[] fields = new String[] {field0};
+    // String[] queries = new String[] {queryString0};
 
     Transaction tx = fullTextSession.beginTransaction();
 
     try {
-      
-      Analyzer analyzer=new WhitespaceAnalyzer(Version.LUCENE_36);
-      
+
+      Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_36);
+      // Analyzer analyzer=new WhitespaceAnalyzer(Version.LUCENE_36);
+
       MultiFieldQueryParser parser = new MultiFieldQueryParser(Version.LUCENE_36, fields, analyzer);
-      
-      parser.setAllowLeadingWildcard(true);  //TODO
-      Query query = parser.parse(Version.LUCENE_36, queries, fields, analyzer);
-      
-//      Query query = MultiFieldQueryParser.parse(Version.LUCENE_36, queries, fields,
-//          new StandardAnalyzer(Version.LUCENE_36));
 
-//      Query query = MultiFieldQueryParser.parse(Version.LUCENE_36, queries, fields,
-//          new WhitespaceAnalyzer(Version.LUCENE_36));
+      parser.setAllowLeadingWildcard(true); // TODO
       
-//      Query query = MultiFieldQueryParser.parse(Version.LUCENE_36, queries, fields,
-//          new KeywordAnalyzer());
-      
+      // parser.setDefaultOperator(Operator.AND);
+      BooleanClause.Occur[] flags = {BooleanClause.Occur.MUST, BooleanClause.Occur.MUST};
 
-      
+      Query query = MultiFieldQueryParser.parse(Version.LUCENE_36, queries, fields, flags, analyzer);
+
+      // Query query = MultiFieldQueryParser.parse(Version.LUCENE_36, queries, fields,
+      // new StandardAnalyzer(Version.LUCENE_36));
+
+      // Query query = MultiFieldQueryParser.parse(Version.LUCENE_36, queries, fields,
+      // new WhitespaceAnalyzer(Version.LUCENE_36));
+
+      // Query query = MultiFieldQueryParser.parse(Version.LUCENE_36, queries, fields,
+      // new KeywordAnalyzer());
+
       System.out.println("=====================================");
       System.out.println("Lucene query: " + query.toString());
       System.out.println("=====================================");
@@ -199,6 +211,11 @@ public class MainApplication {
   }
 
   public void deleteEssays(List<Serializable> idList) {
+
+    System.out.println("=====================================");
+    System.out.println("Deleted Essays:");
+    System.out.println("=====================================");
+
     for (Serializable id : idList) {
       deleteEssay(id);
     }
@@ -217,12 +234,13 @@ public class MainApplication {
     System.out.println("Essay " + id + " has been deleted.");
   }
 
-  public Serializable saveNewEssay(String title, String author, String content) {
+  public Serializable saveNewEssay(String tag, String title, String author, String content) {
     Session session = HibernateUtil.getSessionFactory().openSession();
 
     session.beginTransaction();
 
     Essay essay = new Essay();
+    essay.setTag(tag);
     essay.setTitle(title);
     essay.setAuthor(author);
     essay.setContent(content);
