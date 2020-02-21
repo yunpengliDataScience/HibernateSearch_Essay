@@ -2,6 +2,7 @@ package com.library.essay.applications;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.lucene.analysis.Analyzer;
@@ -12,6 +13,7 @@ import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.util.Version;
 import org.hibernate.CacheMode;
+import org.hibernate.Criteria;
 import org.hibernate.FlushMode;
 import org.hibernate.ScrollMode;
 import org.hibernate.ScrollableResults;
@@ -22,6 +24,7 @@ import org.hibernate.search.FullTextSession;
 import org.hibernate.search.Search;
 
 import com.library.essay.persistence.entities.Essay;
+import com.library.essay.utils.HibernateSplitInClause;
 import com.library.essay.utils.HibernateUtil;
 
 
@@ -31,11 +34,13 @@ public class MainApplication {
 
     MainApplication application = new MainApplication();
 
-    List<Serializable> idList = application.saveTestEssays(100);
+    List<Serializable> idList = application.saveTestEssays(1001);
 
     application.printEssays(idList);
 
-    application.search();
+    application.test1000LimitInSubquery(idList);
+
+    // application.search();
 
     // application.buildIndex();
 
@@ -60,12 +65,31 @@ public class MainApplication {
       String tag = prefix + "-" + letter + letter + letter + letter + "-000" + i;
 
       String title = "Test Essay " + i;
+
       Serializable id = this.saveNewEssay(tag, title, "Cliff Lee", "HHH CDF" + i);
+
+      System.out.println("Saved " + title);
 
       idList.add(id);
     }
 
     return idList;
+  }
+
+  public void test1000LimitInSubquery(List<Serializable> idList) {
+    Session session = HibernateUtil.getSessionFactory().openSession();
+
+    Criteria criteria = session.createCriteria(Essay.class);
+
+    // ORA-01795: maximum number of expressions in a list is 1000
+    // criteria.add(Restrictions.in("id", idList));
+
+    criteria.add(HibernateSplitInClause.in("id", idList));
+
+    Collection resultList = criteria.list();
+    System.out.println("Size of resultList: " + resultList.size());
+
+    session.close();
   }
 
   public void buildIndex() {
@@ -202,6 +226,7 @@ public class MainApplication {
 
     Essay essay = (Essay) session.get(Essay.class, id);
 
+    session.close();
     return essay;
   }
 

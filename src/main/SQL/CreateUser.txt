@@ -1,0 +1,4 @@
+SQL> conn / as sysdba
+SQL> create user EssayLibrary identified by EssayLibrary;
+SQL> GRANT CONNECT, RESOURCE, DBA TO EssayLibrary;
+SQL> grant all privileges to EssayLibrary;

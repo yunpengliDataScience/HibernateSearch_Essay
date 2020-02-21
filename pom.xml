@@ -18,20 +18,21 @@
 			<version>${hibernate.search.version}</version>
 		</dependency>
 		
-		<!-- ORACLE database driver jar is in the local repo 
+		<!-- ORACLE database driver jar is in the local repo -->
 		<dependency>
 			<groupId>com.oracle</groupId>
 			<artifactId>ojdbc6</artifactId>
-			<version>11.2.0</version>
-		</dependency>
-		-->
+			<version>11.2.0.1.0</version>
+		</dependency> 
 		
+		<!--  
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
 			<version>1.4.190</version>
 		</dependency>
-
+		-->
+		
 		<!-- LOGGING DEPENDENCIES - LOG4J -->
 
 		<dependency>
@@ -92,6 +93,12 @@
 			<id>JBoss</id>
 			<name>JBoss Repository</name>
 			<url>https://repository.jboss.org/nexus/content/repositories/releases/</url>
+		</repository>
+		<!-- Oracle jdbc drive from geomajas.org -->
+		<repository>
+			<id>Oracle</id>
+			<name>Geomajas Repository</name>
+			<url>http://maven.geomajas.org/</url>
 		</repository>
 
 		<repository>
