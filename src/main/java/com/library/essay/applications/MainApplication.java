@@ -31,22 +31,7 @@ public class MainApplication {
 
     MainApplication application = new MainApplication();
 
-    List<Serializable> idList = new ArrayList<Serializable>();
-
-    String prefix = "123";
-    String[] letters = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O",
-        "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"};
-
-    for (int i = 0; i < 100; i++) {
-
-      String letter = letters[i % 26];
-      String tag = prefix + "-" + letter + letter + letter + letter + "-000" + i;
-
-      String title = "Test Essay " + i;
-      Serializable id = application.saveNewEssay(tag, title, "Cliff Lee", "HHH CDF" + i);
-
-      idList.add(id);
-    }
+    List<Serializable> idList = application.saveTestEssays(100);
 
     application.printEssays(idList);
 
@@ -60,6 +45,27 @@ public class MainApplication {
     application.deleteEssays(idList);
 
     System.exit(0);
+  }
+
+  public List<Serializable> saveTestEssays(int initialSize) {
+    List<Serializable> idList = new ArrayList<Serializable>();
+
+    String prefix = "123";
+    String[] letters = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O",
+        "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"};
+
+    for (int i = 0; i < initialSize; i++) {
+
+      String letter = letters[i % 26];
+      String tag = prefix + "-" + letter + letter + letter + letter + "-000" + i;
+
+      String title = "Test Essay " + i;
+      Serializable id = this.saveNewEssay(tag, title, "Cliff Lee", "HHH CDF" + i);
+
+      idList.add(id);
+    }
+
+    return idList;
   }
 
   public void buildIndex() {
@@ -150,11 +156,12 @@ public class MainApplication {
       MultiFieldQueryParser parser = new MultiFieldQueryParser(Version.LUCENE_36, fields, analyzer);
 
       parser.setAllowLeadingWildcard(true); // TODO
-      
+
       // parser.setDefaultOperator(Operator.AND);
       BooleanClause.Occur[] flags = {BooleanClause.Occur.MUST, BooleanClause.Occur.MUST};
 
-      Query query = MultiFieldQueryParser.parse(Version.LUCENE_36, queries, fields, flags, analyzer);
+      Query query =
+          MultiFieldQueryParser.parse(Version.LUCENE_36, queries, fields, flags, analyzer);
 
       // Query query = MultiFieldQueryParser.parse(Version.LUCENE_36, queries, fields,
       // new StandardAnalyzer(Version.LUCENE_36));
@@ -195,6 +202,7 @@ public class MainApplication {
 
     Essay essay = (Essay) session.get(Essay.class, id);
 
+    session.close();
     return essay;
   }
 

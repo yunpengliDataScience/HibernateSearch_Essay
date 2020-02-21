@@ -1,4 +1,7 @@
-/target
+/target/
+/src/main/Doc/
+*settings
 .project
 .classpath
-.settings
+*.jar
+*.log
